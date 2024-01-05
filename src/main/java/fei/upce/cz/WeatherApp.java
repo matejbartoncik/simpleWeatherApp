@@ -34,11 +34,12 @@ public class WeatherApp {
 
     private void parseWeatherResponse() {
         SimpleDateFormat formatter = new SimpleDateFormat(" HH:mm:ss");
+        String timestamp = formatter.format(new Date());
         Date date = new Date();
         JSONObject wrapObj = new JSONObject(weatherResponse);
         String description = wrapObj.getJSONArray("weather").getJSONObject(0).getString("description");
-        double temperature = wrapObj.getJSONObject("main").getDouble("temp");
-        System.out.println(round(temperature,1) + "---" + description + "--" + formatter.format(date));
+        double temperature = round(wrapObj.getJSONObject("main").getDouble("temp"),1) ;
+        System.out.println(temperature + "---" + description + "--" + timestamp);
     }
     private static double round (double value, int precision) {
         int scale = (int) Math.pow(10, precision);
