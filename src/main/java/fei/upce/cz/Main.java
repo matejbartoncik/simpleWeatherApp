@@ -6,10 +6,10 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Scanner user_input = new Scanner(System.in);
+      Scanner user_input = new Scanner(System.in);
 
-        do {
-            System.out.print("Zadejte lokaci kde chcete zjistit počasí: ");
+ //       do {
+  /*          System.out.print("Zadejte lokaci kde chcete zjistit počasí: ");
             String userLocation = user_input.nextLine();
             WeatherApp pocasi = new WeatherApp(userLocation);
             System.out.print("Chcete zjistit počasí v jiné lokaci? (ano/ne)");
@@ -22,7 +22,10 @@ public class Main {
             if (!odpoved.equals("ano")) {
                 System.out.println("Neplatná odpoveď");
             }
-        } while (true);
+        } while (true);*/
+        String user_location = user_input.nextLine();
+        WeatherApp pocasi_lokace = new WeatherApp(user_location);
+        pocasi_lokace.weatherRead();
     }
 
 

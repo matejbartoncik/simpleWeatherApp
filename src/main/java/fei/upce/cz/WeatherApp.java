@@ -8,11 +8,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.swing.plaf.InsetsUIResource;
+import java.io.*;
 import java.net.URLEncoder;
+import java.nio.ReadOnlyBufferException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,19 +38,19 @@ public class WeatherApp {
         JSONObject wrapObj = new JSONObject(weatherResponse);
         String description = wrapObj.getJSONArray("weather").getJSONObject(0).getString("description");
         double temperature = round(wrapObj.getJSONObject("main").getDouble("temp"), 1);
-        String output = "\n"+"Lokace: " + user_location + "\n" + "Teplota: " + temperature + "\n" + "Popis: " + description + "\n" + "Čas: " + timestamp;
+        String output = "\n" + "Lokace: " + user_location + "\n" + "Teplota: " + temperature + "\n" + "Popis: " + description + "\n" + "Čas: " + timestamp;
         System.out.println(output);
         dataOutput(output);
     }
 
     private void dataOutput(String output_data) { //Zapisuje data do souboru dataPocasi.txt
-        File file = new File("dataPocasi.txt");
+        File file = new File("dataPocasi." + user_location + ".txt");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-            if (!file.exists()){
+            if (!file.exists()) {
                 file.createNewFile();
             }
-            System.out.println("Zapisuji data do souboru dataPocasi.txt");
-            writer.write("\n"+output_data);
+            System.out.println("Zapisuji data do souboru dataPocasi." + user_location + ".txt");
+            writer.write("\n" + output_data);
 
         } catch (IOException e) {
             System.out.println("Chyba při zápisu do souboru");
@@ -59,7 +58,20 @@ public class WeatherApp {
 
     }
 
+    public void weatherRead() {
 
+        try (BufferedReader read = new BufferedReader(new FileReader("dataPocasi." + user_location + ".txt"))) {
+            String line;
+            while ((line = read.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("soubor nenalezen");
+        } catch (IOException e) {
+            System.out.println("Chyba pri cteni souboru");
+
+        }
+    }
     private static double round(double value, int precision) { //Zaokrouhluje čísla
         int scale = (int) Math.pow(10, precision);
         return (double) Math.round(value * scale) / scale;
@@ -68,7 +80,7 @@ public class WeatherApp {
     private void nameConvert() { //Převádí název lokace na formát který je použitelný v URL
         user_location = user_location.replace(" ", ".");
         user_location = user_location.toLowerCase();
-        APICallCords(user_location);
+
     }
 
 
@@ -83,7 +95,7 @@ public class WeatherApp {
                 HttpGet request = new HttpGet(url);
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
                     String weatherResponse = EntityUtils.toString(response.getEntity());
-                    parseWeatherResponse(weatherResponse,user_location);
+                    parseWeatherResponse(weatherResponse, user_location);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
